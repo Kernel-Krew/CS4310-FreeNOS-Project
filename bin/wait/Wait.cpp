@@ -20,9 +20,10 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <kernel/ProcessManager.h>
-#include <kernel/Process.h>
-#include <kernel/Kernel.h>
+#include <FreeNOS/System.h>
+#include <FreeNOS/ProcessManager.h>
+#include <FreeNOS/Process.h>
+#include <FreeNOS/Kernel.h>
 #include "Wait.h"
 
 Wait::Wait(int argc, char **argv)
@@ -47,11 +48,9 @@ Wait::Result Wait::exec()
         return InvalidArgument;
     }
 
-    ProcessManager *procs = Kernel::instance()->getProcessManager();
-    Process *process = procs->get(pid);
+    API::Result result = ProcessCtl(pid, WaitPID);
     
-    ProcessManager::Result result = procs->wait(process);
-    if (result == ProcessManager::Result::Success)
+    if (result == 0)
         return Success;
     else
         return IOError;
