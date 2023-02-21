@@ -35,21 +35,21 @@ Wait::~Wait()
 
 Wait::Result Wait::exec()
 {
-    int sec = 0;
+    int pid = 0;
 
-    // Convert input to seconds
-    if ((sec = atoi(arguments().get("SECONDS"))) <= 0)
+    // Get PID from arguments
+    if ((pid = atoi(arguments().get("PID"))) < 0)
     {
-        ERROR("invalid sleep time `" << arguments().get("SECONDS") << "'");
+        ERROR("invalid PID `" << arguments().get("PID") << "'");
         return InvalidArgument;
     }
 
-    // Sleep now
-    if (sleep(sec) != 0)
-    {
-        ERROR("failed to sleep: " << strerror(errno));
-        return IOError;
-    }
+    // Wait for process to complete
+    // if (sleep(sec) != 0)
+    // {
+    //     ERROR("failed to sleep: " << strerror(errno));
+    //     return IOError;
+    // }
 
     // Done
     return Success;
