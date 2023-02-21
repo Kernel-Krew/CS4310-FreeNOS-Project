@@ -40,16 +40,16 @@ Wait::Result Wait::exec()
     int pid = atoi(arguments().get("PID"));
     ProcessClient process;
     ProcessClient::Info info;
-    ProcessClient::Result r = process.processInfo(pid, info);
+    ProcessClient::Result result = process.processInfo(pid, info);
 
-    if (r != 0) {
+    // Checks whether PID corresponds to a process
+    if (result != ProcessClient::Success) {
         ERROR("invalid PID `" << arguments().get("PID") << "'");
         return InvalidArgument;
     }
 
-    API::Result result = ProcessCtl(pid, WaitPID);
-    
-    if (result == 0)
+    // Returns status of Wait command
+    if (ProcessCtl(pid, WaitPID) == API::Success)
         return Success;
     else
         return IOError;
