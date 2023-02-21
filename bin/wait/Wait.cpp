@@ -48,15 +48,11 @@ Wait::Result Wait::exec()
     }
 
     ProcessManager *procs = Kernel::instance()->getProcessManager();
-    // Process process = ProcessManager::get(pid);
-
-    // Wait for process to complete
-    // if (sleep(sec) != 0)
-    // {
-    //     ERROR("failed to sleep: " << strerror(errno));
-    //     return IOError;
-    // }
-
-    // Done
-    return Success;
+    Process *process = procs->get(pid);
+    
+    ProcessManager::Result result = procs->wait(process);
+    if (result == ProcessManager::Result::Success)
+        return Success;
+    else
+        return IOError;
 }
