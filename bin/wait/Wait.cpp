@@ -20,10 +20,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <FreeNOS/System.h>
-#include <FreeNOS/ProcessManager.h>
-#include <FreeNOS/Process.h>
-#include <FreeNOS/Kernel.h>
+#include <System.h>
 #include "Wait.h"
 
 Wait::Wait(int argc, char **argv)
