@@ -20,6 +20,9 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <FreeNOS/ProcessManager.h>
+#include <FreeNOS/Process.h>
+#include <FreeNOS/Kernel.h>
 #include "Wait.h"
 
 Wait::Wait(int argc, char **argv)
@@ -43,6 +46,9 @@ Wait::Result Wait::exec()
         ERROR("invalid PID `" << arguments().get("PID") << "'");
         return InvalidArgument;
     }
+
+    ProcessManager *procs = Kernel::instance()->getProcessManager();
+    // Process process = ProcessManager::get(pid);
 
     // Wait for process to complete
     // if (sleep(sec) != 0)
