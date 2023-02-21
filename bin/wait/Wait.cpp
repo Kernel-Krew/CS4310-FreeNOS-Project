@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <System.h>
+#include <ProcessClient.h>
 #include "Wait.h"
 
 Wait::Wait(int argc, char **argv)
@@ -36,11 +37,12 @@ Wait::~Wait()
 
 Wait::Result Wait::exec()
 {
-    int pid = 0;
+    int pid = atoi(arguments().get("PID"));
+    ProcessClient process;
+    ProcessClient::Info info;
+    ProcessClient::Result r = process.processInfo(pid, info);
 
-    // Get PID from arguments
-    if ((pid = atoi(arguments().get("PID"))) < 0)
-    {
+    if (r != 0) {
         ERROR("invalid PID `" << arguments().get("PID") << "'");
         return InvalidArgument;
     }
