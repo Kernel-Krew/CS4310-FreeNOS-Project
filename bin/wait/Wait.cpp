@@ -25,8 +25,8 @@
 Wait::Wait(int argc, char **argv)
     : POSIXApplication(argc, argv)
 {
-    parser().setDescription("Stop executing for some time");
-    parser().registerPositional("SECONDS", "Stop executing for the given number of seconds");
+    parser().setDescription("This  function takes a numeric argument, which is the process-id to wait for.");
+    parser().registerPositional("PID", "The process ID to wait on");
 }
 
 Wait::~Wait()
