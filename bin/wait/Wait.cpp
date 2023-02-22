@@ -35,6 +35,21 @@ Wait::~Wait()
 {
 }
 
+/*  Override exec() method of parent class POSIXApplication 
+*
+*   In order to access the FreeNOS API, we must include the 
+*   header file System.h. The reason why there are more than one System.h
+*   file is because they are intended for different hardware architectures.
+*   We use the ProcessCtl method from the API, passing the PID and the 'WaitPID' string
+*   into the function parameter so that we can execute the 'wait' on the PID. 
+*
+*   In order to check whether the PID exists or not, can use a method
+*   from the ProcessClient to check. To do this, we must first include the 
+*   header file ProcessClient.h. Looking at the ProcessClient.cpp file, we can see
+*   that the processInfo(ProcessID pid, ProcessClient::Info &info)) method returns NotFound if
+*   the PID does not exist, and Sucess if it does exist. Thus, returning anything other than
+*   Sucess means that the PID does not exist and so would not execute the 'wait' command.
+*/
 Wait::Result Wait::exec()
 {
     int pid = atoi(arguments().get("PID"));

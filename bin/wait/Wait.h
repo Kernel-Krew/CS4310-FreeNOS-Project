@@ -26,7 +26,7 @@
  */
 
 /**
- * Stop executing for some time.
+ * Wait for a specific process to complete execution before starting another task
  */
 class Wait : public POSIXApplication
 {
@@ -57,4 +57,4 @@ class Wait : public POSIXApplication
  * @}
  */
 
-#endif /* __BIN_SLEEP_SLEEP_H */
+#endif /* __BIN_WAIT_WAIT_H */
