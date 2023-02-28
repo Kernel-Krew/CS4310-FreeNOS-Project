@@ -135,6 +135,7 @@ API::Result ProcessCtlHandler(const ProcessID procID,
         info->id    = proc->getID();
         info->state = proc->getState();
         info->parent = proc->getParent();
+        info->priority = proc->getPriority();
         break;
 
     case WaitPID:
@@ -177,6 +178,10 @@ API::Result ProcessCtlHandler(const ProcessID procID,
         if (procs->sleep((const Timer::Info *)addr) == ProcessManager::Success)
             procs->schedule();
         break;
+    
+    case SetPriority:
+        proc->setPriority(addr);
+        break;
     }
 
     return API::Success;
@@ -199,6 +204,7 @@ Log & operator << (Log &log, ProcessOperation op)
         case EnterSleep: log.append("EnterSleep"); break;
         case Schedule:  log.append("Schedule"); break;
         case Wakeup:    log.append("Wakeup"); break;
+        case SetPriority: log.append("SetPriority"); break;
         default:        log.append("???"); break;
     }
     return log;

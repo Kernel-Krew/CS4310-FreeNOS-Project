@@ -141,6 +141,18 @@ class Process
     bool isPrivileged() const;
 
     /**
+     * Get priority level in the range of [1, 5].
+     *
+     * @return Priority of the Process.
+     */
+    uint getPriority() const;
+
+    /**
+     * Set priority level in the range of [1, 5].
+     */
+    void setPriority(uint priority);
+
+    /**
      * Compare two processes.
      *
      * @param proc Process to compare with.
@@ -260,6 +272,9 @@ class Process
 
     /** Privilege level */
     bool m_privileged;
+
+    /** The process priority in the range of [1,5]. */
+    uint m_priority;
 
     /** Entry point of the program */
     Address m_entry;

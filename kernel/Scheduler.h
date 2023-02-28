@@ -89,8 +89,10 @@ class Scheduler
 
   private:
 
-    /** Contains processes ready to run */
-    Queue<Process *, MAX_PROCS> m_queue;
+    /** The ML priority queues */
+    Queue<Process *, MAX_PROCS> m_ml3_queue;
+    Queue<Process *, MAX_PROCS> m_ml2_queue;
+    Queue<Process *, MAX_PROCS> m_ml1_queue;
 };
 
 /**
