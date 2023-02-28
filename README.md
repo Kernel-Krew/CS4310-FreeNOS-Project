@@ -2,7 +2,9 @@
 
 ## Project members:
 Tyler Nijmeh
+
 Uziel Gaeta
+
 Michael Truong
 
 ## Link to youtube video demo
