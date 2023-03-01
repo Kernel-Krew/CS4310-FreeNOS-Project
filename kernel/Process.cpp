@@ -26,14 +26,14 @@
 Process::Process(ProcessID id, Address entry, bool privileged, const MemoryMap &map)
     : m_id(id), m_map(map), m_shares(id)
 {
-    m_state         = Stopped;
-    m_parent        = 0;
-    m_waitId        = 0;
-    m_waitResult    = 0;
-    m_wakeups       = 0;
-    m_entry         = entry;
-    m_privileged    = privileged;
-    m_priority      = 3;
+    m_state = Stopped;
+    m_parent = 0;
+    m_waitId = 0;
+    m_waitResult = 0;
+    m_wakeups = 0;
+    m_entry = entry;
+    m_privileged = privileged;
+    m_priority = 3;
     m_memoryContext = ZERO;
     m_kernelChannel = ZERO;
     MemoryBlock::set(&m_sleepTimer, 0, sizeof(m_sleepTimer));
@@ -83,17 +83,17 @@ Process::State Process::getState() const
     return m_state;
 }
 
-ProcessShares & Process::getShares()
+ProcessShares &Process::getShares()
 {
     return m_shares;
 }
 
-const Timer::Info & Process::getSleepTimer() const
+const Timer::Info &Process::getSleepTimer() const
 {
     return m_sleepTimer;
 }
 
-MemoryContext * Process::getMemoryContext()
+MemoryContext *Process::getMemoryContext()
 {
     return m_memoryContext;
 }
@@ -108,7 +108,7 @@ void Process::setPriority(uint priority)
     m_priority = priority;
 }
 
-uint Process::getPriority() const
+uint Process::getPriority()
 {
     return m_priority;
 }
@@ -122,11 +122,11 @@ Process::Result Process::wait(ProcessID id)
 {
     if (m_state != Ready)
     {
-        ERROR("Process ID " << m_id << " has invalid state: " << (uint) m_state);
+        ERROR("Process ID " << m_id << " has invalid state: " << (uint)m_state);
         return InvalidArgument;
     }
 
-    m_state  = Waiting;
+    m_state = Waiting;
     m_waitId = id;
 
     return Success;
@@ -136,7 +136,7 @@ Process::Result Process::join(const uint result)
 {
     if (m_state != Waiting)
     {
-        ERROR("PID " << m_id << " has invalid state: " << (uint) m_state);
+        ERROR("PID " << m_id << " has invalid state: " << (uint)m_state);
         return InvalidArgument;
     }
 
@@ -149,7 +149,7 @@ Process::Result Process::stop()
 {
     if (m_state != Ready && m_state != Sleeping && m_state != Stopped)
     {
-        ERROR("PID " << m_id << " has invalid state: " << (uint) m_state);
+        ERROR("PID " << m_id << " has invalid state: " << (uint)m_state);
         return InvalidArgument;
     }
 
@@ -161,7 +161,7 @@ Process::Result Process::resume()
 {
     if (m_state != Stopped)
     {
-        ERROR("PID " << m_id << " has invalid state: " << (uint) m_state);
+        ERROR("PID " << m_id << " has invalid state: " << (uint)m_state);
         return InvalidArgument;
     }
 
@@ -206,14 +206,14 @@ Process::Result Process::initialize()
     }
 
     // Initialize pages with zeroes
-    MemoryBlock::set((void *)allocVirt.address, 0, PAGESIZE*2);
+    MemoryBlock::set((void *)allocVirt.address, 0, PAGESIZE * 2);
     cache.cleanData(allocVirt.address);
     cache.cleanData(allocVirt.address + PAGESIZE);
 
     // Map data and feedback pages in userspace
-    range.phys   = allocPhys.address;
+    range.phys = allocPhys.address;
     range.access = Memory::User | Memory::Readable;
-    range.size   = PAGESIZE * 2;
+    range.size = PAGESIZE * 2;
     m_memoryContext->findFree(range.size, MemoryMap::UserShare, &range.virt);
     m_memoryContext->mapRangeContiguous(&range);
 
@@ -256,7 +256,7 @@ Process::Result Process::sleep(const Timer::Info *timer, bool ignoreWakeups)
 {
     if (m_state != Ready)
     {
-        ERROR("PID " << m_id << " has invalid state: " << (uint) m_state);
+        ERROR("PID " << m_id << " has invalid state: " << (uint)m_state);
         return InvalidArgument;
     }
 

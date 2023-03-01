@@ -46,260 +46,256 @@ class Process
   friend class ProcessManager;
   friend class Scheduler;
 
-  public:
+public:
+  /**
+   * Result codes
+   */
+  enum Result
+  {
+    Success,
+    InvalidArgument,
+    MemoryMapError,
+    OutOfMemory,
+    WakeupPending
+  };
 
-    /**
-     * Result codes
-     */
-    enum Result
-    {
-        Success,
-        InvalidArgument,
-        MemoryMapError,
-        OutOfMemory,
-        WakeupPending
-    };
+  /**
+   * Represents the execution state of the Process
+   */
+  enum State
+  {
+    Ready,
+    Sleeping,
+    Waiting,
+    Stopped
+  };
 
-    /**
-     * Represents the execution state of the Process
-     */
-    enum State
-    {
-        Ready,
-        Sleeping,
-        Waiting,
-        Stopped
-    };
+public:
+  /**
+   * Constructor function.
+   *
+   * @param id Process Identifier
+   * @param entry Initial program counter value.
+   * @param privileged If true, the process has unlimited access to hardware.
+   * @param map Memory map to use
+   */
+  Process(ProcessID id, Address entry, bool privileged, const MemoryMap &map);
 
-  public:
+  /**
+   * Destructor function.
+   */
+  virtual ~Process();
 
-    /**
-     * Constructor function.
-     *
-     * @param id Process Identifier
-     * @param entry Initial program counter value.
-     * @param privileged If true, the process has unlimited access to hardware.
-     * @param map Memory map to use
-     */
-    Process(ProcessID id, Address entry, bool privileged, const MemoryMap &map);
+  /**
+   * Retrieve our ID number.
+   *
+   * @return Process Identification number.
+   */
+  ProcessID getID() const;
 
-    /**
-     * Destructor function.
-     */
-    virtual ~Process();
+  /**
+   * Retrieve our parent ID.
+   *
+   * @return Process ID of our parent.
+   */
+  ProcessID getParent() const;
 
-    /**
-     * Retrieve our ID number.
-     *
-     * @return Process Identification number.
-     */
-    ProcessID getID() const;
+  /**
+   * Get Wait ID.
+   */
+  ProcessID getWait() const;
 
-    /**
-     * Retrieve our parent ID.
-     *
-     * @return Process ID of our parent.
-     */
-    ProcessID getParent() const;
+  /**
+   * Get wait result
+   */
+  uint getWaitResult() const;
 
-    /**
-     * Get Wait ID.
-     */
-    ProcessID getWait() const;
+  /**
+   * Get process shares.
+   *
+   * @return Reference to memory shares.
+   */
+  ProcessShares &getShares();
 
-    /**
-     * Get wait result
-     */
-    uint getWaitResult() const;
+  /**
+   * Retrieves the current state.
+   *
+   * @return Current status of the Process.
+   */
+  State getState() const;
 
-    /**
-     * Get process shares.
-     *
-     * @return Reference to memory shares.
-     */
-    ProcessShares & getShares();
+  /**
+   * Get MMU memory context.
+   *
+   * @return MemoryContext pointer.
+   */
+  MemoryContext *getMemoryContext();
 
-    /**
-     * Retrieves the current state.
-     *
-     * @return Current status of the Process.
-     */
-    State getState() const;
+  /**
+   * Get privilege.
+   *
+   * @return Privilege of the Process.
+   */
+  bool isPrivileged() const;
 
-    /**
-     * Get MMU memory context.
-     *
-     * @return MemoryContext pointer.
-     */
-    MemoryContext * getMemoryContext();
+  /**
+   * Get priority level in the range of [1, 5].
+   *
+   * @return Priority of the Process.
+   */
+  uint getPriority();
 
-    /**
-     * Get privilege.
-     *
-     * @return Privilege of the Process.
-     */
-    bool isPrivileged() const;
+  /**
+   * Set priority level in the range of [1, 5].
+   */
+  void setPriority(uint priority);
 
-    /**
-     * Get priority level in the range of [1, 5].
-     *
-     * @return Priority of the Process.
-     */
-    uint getPriority() const;
+  /**
+   * Compare two processes.
+   *
+   * @param proc Process to compare with.
+   *
+   * @return True if equal, false otherwise.
+   */
+  bool operator==(Process *proc);
 
-    /**
-     * Set priority level in the range of [1, 5].
-     */
-    void setPriority(uint priority);
+protected:
+  /**
+   * Initialize the Process.
+   *
+   * Allocates various (architecture specific) resources,
+   * creates MMU context and stacks.
+   *
+   * @return Result code
+   */
+  virtual Result initialize();
 
-    /**
-     * Compare two processes.
-     *
-     * @param proc Process to compare with.
-     *
-     * @return True if equal, false otherwise.
-     */
-    bool operator == (Process *proc);
+  /**
+   * Restart execution at the given entry point.
+   *
+   * @param entry Address to begin execution.
+   */
+  virtual void reset(const Address entry) = 0;
 
-  protected:
+  /**
+   * Allow the Process to run on the CPU.
+   *
+   * @param previous The previous Process which ran on the CPU. ZERO if none.
+   */
+  virtual void execute(Process *previous) = 0;
 
-    /**
-     * Initialize the Process.
-     *
-     * Allocates various (architecture specific) resources,
-     * creates MMU context and stacks.
-     *
-     * @return Result code
-     */
-    virtual Result initialize();
+  /**
+   * Prevent process from sleeping.
+   *
+   * @return Result code
+   */
+  Result wakeup();
 
-    /**
-     * Restart execution at the given entry point.
-     *
-     * @param entry Address to begin execution.
-     */
-    virtual void reset(const Address entry) = 0;
+  /**
+   * Stops the process for executing until woken up
+   *
+   * @param timer Timer on which the process must be woken up (if expired), or ZERO for no limit
+   * @param ignoreWakeups True to enter Sleep state regardless of pending wakeups
+   *
+   * @return Result code
+   */
+  Result sleep(const Timer::Info *timer, bool ignoreWakeups);
 
-    /**
-     * Allow the Process to run on the CPU.
-     *
-     * @param previous The previous Process which ran on the CPU. ZERO if none.
-     */
-    virtual void execute(Process *previous) = 0;
+  /**
+   * Let Process wait for other Process to terminate.
+   *
+   * @param id Process ID to wait for
+   *
+   * @return Result code
+   */
+  Result wait(ProcessID id);
 
-    /**
-     * Prevent process from sleeping.
-     *
-     * @return Result code
-     */
-    Result wakeup();
+  /**
+   * Complete waiting for another Process.
+   *
+   * @param result Exit code of the other process
+   */
+  virtual Result join(const uint result);
 
-    /**
-     * Stops the process for executing until woken up
-     *
-     * @param timer Timer on which the process must be woken up (if expired), or ZERO for no limit
-     * @param ignoreWakeups True to enter Sleep state regardless of pending wakeups
-     *
-     * @return Result code
-     */
-    Result sleep(const Timer::Info *timer, bool ignoreWakeups);
+  /**
+   * Stop execution of this process.
+   *
+   * @return Result code
+   */
+  Result stop();
 
-    /**
-     * Let Process wait for other Process to terminate.
-     *
-     * @param id Process ID to wait for
-     *
-     * @return Result code
-     */
-    Result wait(ProcessID id);
+  /**
+   * Resume execution when this process is stopped.
+   *
+   * @return Result code
+   */
+  Result resume();
 
-    /**
-     * Complete waiting for another Process.
-     *
-     * @param result Exit code of the other process
-     */
-    virtual Result join(const uint result);
+  /**
+   * Raise kernel event
+   *
+   * @return Result code
+   */
+  Result raiseEvent(const struct ProcessEvent *event);
 
-    /**
-     * Stop execution of this process.
-     *
-     * @return Result code
-     */
-    Result stop();
+  /**
+   * Get sleep timer.
+   *
+   * @return Sleep timer value.
+   */
+  const Timer::Info &getSleepTimer() const;
 
-    /**
-     * Resume execution when this process is stopped.
-     *
-     * @return Result code
-     */
-    Result resume();
+  /**
+   * Set parent process ID.
+   */
+  void setParent(ProcessID id);
 
-    /**
-     * Raise kernel event
-     *
-     * @return Result code
-     */
-    Result raiseEvent(const struct ProcessEvent *event);
+protected:
+  /** Process Identifier */
+  const ProcessID m_id;
 
-    /**
-     * Get sleep timer.
-     *
-     * @return Sleep timer value.
-     */
-    const Timer::Info & getSleepTimer() const;
+  /** Parent process */
+  ProcessID m_parent;
 
-    /**
-     * Set parent process ID.
-     */
-    void setParent(ProcessID id);
+  /** Current process status. */
+  State m_state;
 
-  protected:
+  /** Waits for exit of this Process. */
+  ProcessID m_waitId;
 
-    /** Process Identifier */
-    const ProcessID m_id;
+  /** Wait exit result of the other Process. */
+  uint m_waitResult;
 
-    /** Parent process */
-    ProcessID m_parent;
+  /** Privilege level */
+  bool m_privileged;
 
-    /** Current process status. */
-    State m_state;
+  /** The process priority in the range of [1,5]. */
+  uint m_priority;
 
-    /** Waits for exit of this Process. */
-    ProcessID m_waitId;
+  /** Entry point of the program */
+  Address m_entry;
 
-    /** Wait exit result of the other Process. */
-    uint m_waitResult;
+  /** Virtual memory layout */
+  MemoryMap m_map;
 
-    /** Privilege level */
-    bool m_privileged;
+  /** MMU memory context */
+  MemoryContext *m_memoryContext;
 
-    /** The process priority in the range of [1,5]. */
-    uint m_priority;
+  /** Number of wakeups received */
+  Size m_wakeups;
 
-    /** Entry point of the program */
-    Address m_entry;
+  /**
+   * Sleep timer value.
+   * If non-zero, set the process in the Ready state
+   * when the System timer is greater than this value.
+   */
+  Timer::Info m_sleepTimer;
 
-    /** Virtual memory layout */
-    MemoryMap m_map;
+  /** Contains virtual memory shares between this process and others. */
+  ProcessShares m_shares;
 
-    /** MMU memory context */
-    MemoryContext *m_memoryContext;
-
-    /** Number of wakeups received */
-    Size m_wakeups;
-
-    /**
-     * Sleep timer value.
-     * If non-zero, set the process in the Ready state
-     * when the System timer is greater than this value.
-     */
-    Timer::Info m_sleepTimer;
-
-    /** Contains virtual memory shares between this process and others. */
-    ProcessShares m_shares;
-
-    /** Channel for sending kernel events to the Process */
-    MemoryChannel *m_kernelChannel;
+  /** Channel for sending kernel events to the Process */
+  MemoryChannel *m_kernelChannel;
 };
 
 /**

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Niek Linnenbank
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,11 +36,12 @@ Renice::Result Renice::exec()
     int priority = atoi(arguments().get("PRIO"));
     int pid = atoi(arguments().get("PID"));
 
-    const ProcessClient process;
-
-    if (ProcessCtl(pid, SetPriority, priority) == API::Success) {
+    if (ProcessCtl(pid, SetPriority, priority) == API::Success)
+    {
         return Success;
-    } else {
+    }
+    else
+    {
         return InvalidArgument;
-    }    
+    }
 }
