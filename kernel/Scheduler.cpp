@@ -37,7 +37,7 @@ Scheduler::Result Scheduler::enqueue(Process *proc, bool ignoreState)
         return InvalidArgument;
     }
 
-    switch (3)
+    switch (proc->getPriority())
     {
     case 1:
         m_ml1_queue.push(proc);
@@ -104,26 +104,38 @@ Scheduler::Result Scheduler::dequeue(Process *proc, bool ignoreState)
     return InvalidArgument;
 }
 
-Process *selectFromQueue(Queue<Process *, MAX_PROCS> queue)
-{
-    Process *p = queue.pop();
-    queue.push(p);
-
-    return p;
-}
-
 Process *Scheduler::select()
 {
     if (m_ml5_queue.count() > 0)
-        return selectFromQueue(m_ml5_queue);
+    {
+        Process *p = m_ml5_queue.pop();
+        m_ml5_queue.push(p);
+        return p;
+    }
     if (m_ml4_queue.count() > 0)
-        return selectFromQueue(m_ml4_queue);
+    {
+        Process *p = m_ml4_queue.pop();
+        m_ml4_queue.push(p);
+        return p;
+    }
     if (m_ml3_queue.count() > 0)
-        return selectFromQueue(m_ml3_queue);
+    {
+        Process *p = m_ml3_queue.pop();
+        m_ml3_queue.push(p);
+        return p;
+    }
     if (m_ml2_queue.count() > 0)
-        return selectFromQueue(m_ml2_queue);
+    {
+        Process *p = m_ml2_queue.pop();
+        m_ml2_queue.push(p);
+        return p;
+    }
     if (m_ml1_queue.count() > 0)
-        return selectFromQueue(m_ml1_queue);
+    {
+        Process *p = m_ml1_queue.pop();
+        m_ml1_queue.push(p);
+        return p;
+    }
 
     return (Process *)NULL;
 }
