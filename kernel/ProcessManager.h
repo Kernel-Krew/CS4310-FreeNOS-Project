@@ -159,6 +159,8 @@ class ProcessManager
      */
     Result wakeup(Process *proc);
 
+    Result renice(Process *proc, int priority);
+
     /**
      * Raise kernel event for a Process
      *

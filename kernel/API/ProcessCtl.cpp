@@ -180,7 +180,8 @@ API::Result ProcessCtlHandler(const ProcessID procID,
         break;
     
     case SetPriority:
-        proc->setPriority(addr);
+        procs->renice(proc, addr);
+        procs->schedule();
         break;
     }
 

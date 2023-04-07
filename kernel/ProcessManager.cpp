@@ -421,3 +421,16 @@ ProcessManager::Result ProcessManager::dequeueProcess(Process *proc, const bool 
 
     return Success;
 }
+
+ProcessManager::Result ProcessManager::renice(Process *proc, int priority) {
+    if (proc->getState() != Process::Ready) {
+        proc->setPriority(priority);
+        return Success;
+    }
+
+    m_scheduler->dequeue(proc, true);
+    proc->setPriority(priority);
+    m_scheduler->enqueue(proc, false);
+
+    return Success;
+}
