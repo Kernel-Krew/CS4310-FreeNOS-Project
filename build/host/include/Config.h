@@ -257,7 +257,7 @@
 #define VERSION_SUFFIX ""
 #define VERSION "1.0.3"
 #define VERSIONCODE 65539
-#define RELEASE "1.0.3"
+#define RELEASE "1.0.3-git(63a7a6b)*"
 #define FREENOS 1
 #define COMPILER_VERSION "gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 #define BUILDUSER "michaeltruong"
@@ -266,8 +266,8 @@
 #define BUILDARCH "x86_64"
 #define BUILDPY "Python 3.10.4"
 #define BUILDER "SCons 4.0.1"
-#define BUILDURL "/home/michaeltruong/FreeNOS-1.0.3"
-#define BUILDPATH "/home/michaeltruong/FreeNOS-1.0.3"
-#define TESTROOT "/home/michaeltruong/FreeNOS-1.0.3/build/host"
+#define BUILDURL "/home/michaeltruong/CS4310-FreeNOS-Project"
+#define BUILDPATH "/home/michaeltruong/CS4310-FreeNOS-Project"
+#define TESTROOT "/home/michaeltruong/CS4310-FreeNOS-Project/build/host"
 #endif
 

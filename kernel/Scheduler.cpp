@@ -19,37 +19,24 @@
 #include "Kernel.h"
 #include "Scheduler.h"
 
-// Constructor for Scheduler class
 Scheduler::Scheduler()
 {
     DEBUG("");
 }
 
-/* 
-    Returns the total number of processes in all priority levels. 
-    This is used to calculate the total number of processes in the system. 
-*/
 Size Scheduler::count() const
 {
-    // Count the number of processes in each priority level
     return m_ml5_queue.count() + m_ml4_queue.count() + m_ml3_queue.count() + m_ml2_queue.count() + m_ml1_queue.count();
 }
 
-/*
-    Adds a process to the queue based on its priority level.
-    Returns Success if the process was successfully added to the queue, 
-    or InvalidArgument if the process is not in the Ready state.
-*/
 Scheduler::Result Scheduler::enqueue(Process *proc, bool ignoreState)
 {
-    // Check if the process is in the Ready state
     if (proc->getState() != Process::Ready && !ignoreState)
     {
         ERROR("process ID " << proc->getID() << " not in Ready state");
         return InvalidArgument;
     }
-    
-    // Add the process to the queue based on its priority level
+
     switch (proc->getPriority())
     {
     case 1:
@@ -102,53 +89,117 @@ Scheduler::Result Scheduler::dequeue(Process *proc, bool ignoreState)
         return InvalidArgument;
     }
 
-    if (removeProcess(proc, m_ml1_queue))
-        return Success;
-    if (removeProcess(proc, m_ml2_queue))
-        return Success;
-    if (removeProcess(proc, m_ml3_queue))
-        return Success;
-    if (removeProcess(proc, m_ml4_queue))
-        return Success;
-    if (removeProcess(proc, m_ml5_queue))
-        return Success;
+    Size count = m_ml5_queue.count();
+
+    // Traverse the Queue to remove the Process
+    for (Size i = 0; i < count; i++)
+    {
+        Process *p = m_ml5_queue.pop();
+
+        if (p == proc)
+            return Success;
+        else
+            m_ml5_queue.push(p);
+    }
+
+
+    count = m_ml4_queue.count();
+
+    // Traverse the Queue to remove the Process
+    for (Size i = 0; i < count; i++)
+    {
+        Process *p = m_ml4_queue.pop();
+
+        if (p == proc)
+            return Success;
+        else
+            m_ml4_queue.push(p);
+    }
+
+    count = m_ml3_queue.count();
+
+    // Traverse the Queue to remove the Process
+    for (Size i = 0; i < count; i++)
+    {
+        Process *p = m_ml3_queue.pop();
+
+        if (p == proc)
+            return Success;
+        else
+            m_ml3_queue.push(p);
+    }
+
+    count = m_ml2_queue.count();
+
+    // Traverse the Queue to remove the Process
+    for (Size i = 0; i < count; i++)
+    {
+        Process *p = m_ml2_queue.pop();
+
+        if (p == proc)
+            return Success;
+        else
+            m_ml2_queue.push(p);
+    }
+
+    count = m_ml1_queue.count();
+
+    // Traverse the Queue to remove the Process
+    for (Size i = 0; i < count; i++)
+    {
+        Process *p = m_ml1_queue.pop();
+
+        if (p == proc)
+            return Success;
+        else
+            m_ml1_queue.push(p);
+    }
 
     FATAL("process ID " << proc->getID() << " is not in the schedule");
     return InvalidArgument;
 }
 
-Process *Scheduler::select()
+Process * Scheduler::select()
 {
     if (m_ml5_queue.count() > 0)
     {
         Process *p = m_ml5_queue.pop();
         m_ml5_queue.push(p);
+
         return p;
     }
+
     if (m_ml4_queue.count() > 0)
     {
         Process *p = m_ml4_queue.pop();
         m_ml4_queue.push(p);
+
         return p;
     }
+
     if (m_ml3_queue.count() > 0)
     {
         Process *p = m_ml3_queue.pop();
         m_ml3_queue.push(p);
+
         return p;
     }
+
     if (m_ml2_queue.count() > 0)
     {
         Process *p = m_ml2_queue.pop();
         m_ml2_queue.push(p);
+
         return p;
     }
+
     if (m_ml1_queue.count() > 0)
     {
         Process *p = m_ml1_queue.pop();
         m_ml1_queue.push(p);
+
         return p;
     }
 
-    return (Process *)NULL;
+    return (Process *) NULL;
 }
