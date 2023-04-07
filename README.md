@@ -12,7 +12,9 @@ The features include modifying the "ps" application to display the priority leve
 
 ## Contents of branches
 main branch -> FreeNOS without any changes
+
 wait branch -> FreeNOS with wait command
+
 priority branch -> FreeNOS with priority based scheduling
 
 ## Comments
