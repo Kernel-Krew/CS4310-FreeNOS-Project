@@ -19,24 +19,38 @@
 #include "Kernel.h"
 #include "Scheduler.h"
 
+// Constructor for Scheduler class
 Scheduler::Scheduler()
 {
     DEBUG("");
 }
 
+/**
+ * Returns total number of processes in all priority levels
+ * calculate total number of processes in the system
+*/
 Size Scheduler::count() const
 {
     return m_ml5_queue.count() + m_ml4_queue.count() + m_ml3_queue.count() + m_ml2_queue.count() + m_ml1_queue.count();
 }
 
+/**
+ * Adds process to correct queue based on priority
+ * @param proc process to add to queue
+ * @param ignoreState boolean to ignore state of process
+ * @returns Success if process succefully added to queue, Invalid Argument
+ * otherwise
+ */
 Scheduler::Result Scheduler::enqueue(Process *proc, bool ignoreState)
 {
+    // checks if process is in Ready State, and whether to ignore state
     if (proc->getState() != Process::Ready && !ignoreState)
     {
         ERROR("process ID " << proc->getID() << " not in Ready state");
         return InvalidArgument;
     }
-
+    
+    // Adds process to queue based on priority level
         switch (proc->getPriority())
     {
     case 1:
@@ -61,7 +75,13 @@ Scheduler::Result Scheduler::enqueue(Process *proc, bool ignoreState)
 
     return Success;
 }
-
+/**
+ * Removes a process from the queue
+ * @param proc process to remove from queue
+ * @param ignoreState boolean to ignore state of process
+ * @returns success if process successfully removed from queue,
+ * otherwise returns invalid argument.
+*/
 Scheduler::Result Scheduler::dequeue(Process *proc, bool ignoreState)
 {
     if (proc->getState() == Process::Ready && !ignoreState)
@@ -140,6 +160,10 @@ Scheduler::Result Scheduler::dequeue(Process *proc, bool ignoreState)
     return InvalidArgument;
 }
 
+/**
+ * Selects next process to be run based on priority level queues
+ * @return pointer to next process or Null if no processes left to run
+*/
 Process * Scheduler::select()
 {
     if (m_ml5_queue.count() > 0)
