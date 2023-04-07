@@ -35,6 +35,7 @@ Process::Process(ProcessID id, Address entry, bool privileged, const MemoryMap &
     m_privileged    = privileged;
     m_memoryContext = ZERO;
     m_kernelChannel = ZERO;
+    m_priority      = 3;
     MemoryBlock::set(&m_sleepTimer, 0, sizeof(m_sleepTimer));
 }
 
@@ -239,6 +240,15 @@ Process::Result Process::wakeup()
     {
         return WakeupPending;
     }
+}
+
+int Process::getPriority() {
+    return m_priority;
+}
+
+Process::Result Process::setPriority(int priority) {
+    m_priority = priority;
+    return Success;
 }
 
 Process::Result Process::sleep(const Timer::Info *timer, bool ignoreWakeups)

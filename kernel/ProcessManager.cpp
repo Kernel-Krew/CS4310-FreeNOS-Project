@@ -396,6 +396,17 @@ ProcessManager::Result ProcessManager::interruptNotify(const u32 vector)
     return Success;
 }
 
+ProcessManager::Result ProcessManager::setPriority(Process *proc, int priority) {
+    if (proc->getState() == Process::Ready) {
+        m_scheduler->dequeue(proc, true);
+        proc->setPriority(priority);
+        m_scheduler->enqueue(proc, false);
+    } else
+        proc->setPriority(priority);
+
+    return Success;
+}
+
 ProcessManager::Result ProcessManager::enqueueProcess(Process *proc, const bool ignoreState)
 {
     if (m_scheduler->enqueue(proc, ignoreState) != Scheduler::Success)

@@ -209,6 +209,13 @@ class ProcessManager
      */
     Process * current();
 
+    /**
+     * Set the priority
+     * 
+     * @param proc Process pointer
+     */
+    Result setPriority(Process *proc, int priority);
+
   private:
 
     /**
