@@ -23,4 +23,4 @@ Michael Truong: Fixed queueing bugs and priority bug
 - prio3: Redo implementation, but we got prio2 to work
 
 ## Link to youtube video demo
-https://youtu.be/m4qpKL9_GMg
+https://youtu.be/xmRONQvfq0A
